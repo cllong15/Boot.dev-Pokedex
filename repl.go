@@ -18,9 +18,16 @@ func startRepl() {
 			continue
 		}
 
-		commandName := words[0]
+		var cliCommands = getCommands()
+		var command CLICommand
+		var ok bool
+		command, ok = cliCommands[words[0]]
 
-		fmt.Printf("Your command was: %s\n", commandName)
+		if ok == false {
+			fmt.Print("Error: Command not found\n")
+		} else {
+			command.callback()
+		}
 	}
 }
 
