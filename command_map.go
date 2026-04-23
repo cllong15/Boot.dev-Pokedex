@@ -1,37 +1,40 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
 )
 
-func commandMap(config *config) error {
-	// get request for next page
-	if config.Next == "" {
-		fmt.Print("No next page\n")
-		return nil
+func commandMapf(cfg *config) error {
+	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
+	if err != nil {
+		return err
 	}
-	res, ok := http.Get(config.Next)
-	if ok != nil {
-		return ok
-	}
-	defer res.Body.Close()
 
-	var areas AreaStruct
-	decoder := json.NewDecoder(res.Body)
-	ok = decoder.Decode(&areas)
-	if ok != nil {
-		return ok
+	cfg.nextLocationsURL = locationsResp.Next
+	cfg.prevLocationsURL = locationsResp.Previous
+
+	for _, loc := range locationsResp.Results {
+		fmt.Println(loc.Name)
 	}
-	if areas.Next != nil {
-		config.Next = *areas.Next
+	return nil
+}
+
+func commandMapb(cfg *config) error {
+	if cfg.prevLocationsURL == nil {
+		return errors.New("you're on the first page")
 	}
-	if areas.Previous != nil {
-		config.Previous = *areas.Previous
+
+	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.prevLocationsURL)
+	if err != nil {
+		return err
 	}
-	for _, area := range areas.Results {
-		fmt.Println(area.Name)
+
+	cfg.nextLocationsURL = locationResp.Next
+	cfg.prevLocationsURL = locationResp.Previous
+
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
 	}
 	return nil
 }
