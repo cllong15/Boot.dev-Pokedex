@@ -1,16 +1,13 @@
 package main
 
 import (
-	"pokedexcli/internal/pokeapi"
 	"time"
+
+	"pokedexcli/internal/pokeapi"
 )
 
 func main() {
-	clientConfig := pokeapi.PokeClientConfig{
-		ClientTimeout: 5 * time.Second,
-		CacheInterval: 5 * time.Second,
-	}
-	pokeClient := pokeapi.NewClient(clientConfig)
+	pokeClient := pokeapi.NewClient(5*time.Second, time.Minute*5)
 	cfg := &config{
 		pokeapiClient: pokeClient,
 	}
