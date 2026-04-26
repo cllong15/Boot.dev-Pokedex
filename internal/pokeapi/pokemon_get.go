@@ -9,7 +9,7 @@ import (
 
 // GetPokemon -
 func (c *Client) GetPokemon(pokemonName string) (Pokemon, error) {
-	url := baseURL + "/pokemon/" + pokemonName
+	url := baseURL + "pokemon/" + pokemonName
 
 	if val, ok := c.cache.Get(url); ok {
 		pokemonResp := Pokemon{}
