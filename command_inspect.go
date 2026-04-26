@@ -1,27 +1,31 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 func commandInspect(cfg *config, args ...string) error {
-	pokemon, ok := cfg.caughtPokemon[args[0]]
-	if ok == false {
-		return fmt.Errorf("you have not caught that pokemon")
+	if len(args) != 1 {
+		return errors.New("you must provide a pokemon name")
 	}
 
-	fmt.Printf("Name: %s\n", pokemon.Name)
-	fmt.Printf("Height: %d\n", pokemon.Height)
-	fmt.Printf("Weight: %d\n", pokemon.Weight)
-	fmt.Printf("Stats:\n")
-	fmt.Printf(" -hp: %d\n", pokemon.Stats[0].BaseStat)
-	fmt.Printf(" -attack: %d\n", pokemon.Stats[1].BaseStat)
-	fmt.Printf(" -defense: %d\n", pokemon.Stats[2].BaseStat)
-	fmt.Printf(" -special-attack: %d\n", pokemon.Stats[3].BaseStat)
-	fmt.Printf(" -special-defense: %d\n", pokemon.Stats[4].BaseStat)
-	fmt.Printf(" -speed: %d\n", pokemon.Stats[5].BaseStat)
-	fmt.Printf("Types:\n")
-	fmt.Printf(" - %s\n", pokemon.Types[0].Type.Name)
-	if len(pokemon.Types) > 1 {
-		fmt.Printf(" - %s\n", pokemon.Types[1].Type.Name)
+	name := args[0]
+	pokemon, ok := cfg.caughtPokemon[name]
+	if !ok {
+		return errors.New("you have not caught that pokemon")
+	}
+
+	fmt.Println("Name:", pokemon.Name)
+	fmt.Println("Height:", pokemon.Height)
+	fmt.Println("Weight:", pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf("  -%s: %v\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, typeInfo := range pokemon.Types {
+		fmt.Println("  -", typeInfo.Type.Name)
 	}
 	return nil
 }
