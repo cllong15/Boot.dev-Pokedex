@@ -7,18 +7,17 @@ import (
 	"net/http"
 )
 
-// GetLocation -
-func (c *Client) GetPokemon(PokeName string) (Pokemon, error) {
-	url := baseURL + "pokemon/" + PokeName
-	// fmt.Println(url)
+// GetPokemon -
+func (c *Client) GetPokemon(pokemonName string) (Pokemon, error) {
+	url := baseURL + "/pokemon/" + pokemonName
 
 	if val, ok := c.cache.Get(url); ok {
-		pokeResp := Pokemon{}
-		err := json.Unmarshal(val, &pokeResp)
+		pokemonResp := Pokemon{}
+		err := json.Unmarshal(val, &pokemonResp)
 		if err != nil {
 			return Pokemon{}, fmt.Errorf("GetPokemon: cache Unmarshal: %v", err)
 		}
-		return pokeResp, nil
+		return pokemonResp, nil
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -37,13 +36,13 @@ func (c *Client) GetPokemon(PokeName string) (Pokemon, error) {
 		return Pokemon{}, fmt.Errorf("GetPokemon: dat: %v", err)
 	}
 
-	pokeResp := Pokemon{}
-	err = json.Unmarshal(dat, &pokeResp)
+	pokemonResp := Pokemon{}
+	err = json.Unmarshal(dat, &pokemonResp)
 	if err != nil {
 		return Pokemon{}, fmt.Errorf("GetPokemon: pokeResp Unmarshal: %v", err)
 	}
 
 	c.cache.Add(url, dat)
 
-	return pokeResp, nil
+	return pokemonResp, nil
 }
